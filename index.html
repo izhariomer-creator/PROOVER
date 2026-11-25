@@ -1,0 +1,617 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="description" content="Proover: research-driven AI for detecting bias and enabling media accountability.">
+<style>:root{color-scheme:light}body{margin:0;padding:0}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>Proover Platform Overview</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,600;8..60,700&family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+/* Layout: a research lab's evidence room. Hero proof card, a run ticker, the pipeline strip, then bays of screen tiles; each tile opens the redesigned screen. */
+:root{
+  --bg:#F1F2EF; --surface:#FBFBFA; --surface-2:#EEF0EC; --white:#FFFFFF; --line:#D6D9D2; --line-soft:#E1E3DE;
+  --fg:#1C2230; --ink-2:#3B4252; --muted:#596070; --faint:#6E7480;
+  --accent:#0F6B5C; --accent-deep:#0A4F44; --accent-soft:#E6F1EE; --accent-line:#BFDCD3; --accent-ink:#FFFFFF; --mint:#7FD1BE;
+  --review:#8A5A00; --review-soft:#F6EBD6;
+  --flag-c:#1F3B63; --flag-bg:#E3ECF8; --list-c:#7A4A06; --list-bg:#F4E9D7;
+  --bad:#B13A2B; --bad-soft:#F6E2DE;
+  --solid:#1C2230; --solid-ink:#FFFFFF;
+  --hl:rgba(15,107,92,.16);
+  --serif:"Source Serif 4",Georgia,"Times New Roman",serif;
+  --body:"IBM Plex Sans","Segoe UI",system-ui,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --bg:#12161C; --surface:#181D25; --surface-2:#1F252F; --white:#1B212A; --line:#2E3642; --line-soft:#252C37;
+  --fg:#E7EAEE; --ink-2:#C5CBD3; --muted:#9AA3AF; --faint:#8790A0;
+  --accent:#5CC3AE; --accent-deep:#8FDCCB; --accent-soft:#163430; --accent-line:#24564C; --accent-ink:#0E1A17; --mint:#7FD1BE;
+  --review:#E3B25A; --review-soft:#3A2E17;
+  --flag-c:#A9C4EA; --flag-bg:#1E2B3E; --list-c:#E7B877; --list-bg:#3A2C17;
+  --bad:#F08A78; --bad-soft:#3B211D;
+  --solid:#E7EAEE; --solid-ink:#12161C;
+  --hl:rgba(92,195,174,.22);
+  color-scheme:dark;
+}}
+:root[data-theme="dark"]{
+  --bg:#12161C; --surface:#181D25; --surface-2:#1F252F; --white:#1B212A; --line:#2E3642; --line-soft:#252C37;
+  --fg:#E7EAEE; --ink-2:#C5CBD3; --muted:#9AA3AF; --faint:#8790A0;
+  --accent:#5CC3AE; --accent-deep:#8FDCCB; --accent-soft:#163430; --accent-line:#24564C; --accent-ink:#0E1A17; --mint:#7FD1BE;
+  --review:#E3B25A; --review-soft:#3A2E17;
+  --flag-c:#A9C4EA; --flag-bg:#1E2B3E; --list-c:#E7B877; --list-bg:#3A2C17;
+  --bad:#F08A78; --bad-soft:#3B211D;
+  --solid:#E7EAEE; --solid-ink:#12161C;
+  --hl:rgba(92,195,174,.22);
+  color-scheme:dark;
+}
+*{box-sizing:border-box}
+body{background:var(--bg);color:var(--fg);font-family:var(--body);font-size:15px;line-height:1.55;-webkit-font-smoothing:antialiased}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+a{color:inherit;text-decoration:none}
+.wrap{max-width:1200px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.mono{font-family:var(--mono);font-variant-numeric:tabular-nums}
+:focus-visible{outline:2px solid var(--accent);outline-offset:3px;border-radius:6px}
+h1,h2,h3{text-wrap:balance}
+.est{font:500 10.5px var(--mono);letter-spacing:.04em;text-transform:uppercase;color:var(--review);background:var(--review-soft);padding:1px 6px;border-radius:4px;white-space:nowrap;vertical-align:2px}
+
+/* top bar */
+.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:color-mix(in srgb,var(--bg) 88%,transparent);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--line-soft)}
+.bar .wrap{display:flex;align-items:center;gap:18px;padding-block:12px;flex-wrap:wrap}
+.mark{display:flex;align-items:center;gap:10px;font-weight:700;font-size:19px;letter-spacing:-.01em}
+.mark svg{width:30px;height:30px;flex:none}
+.mark small{font:500 11px var(--mono);letter-spacing:.06em;color:var(--muted);border:1px solid var(--line);padding:2px 7px;border-radius:5px}
+.nav{display:flex;gap:2px;margin-left:auto;flex-wrap:wrap}
+.nav a{font:500 13.5px var(--body);color:var(--ink-2);padding:7px 12px;border-radius:999px;border:1px solid transparent}
+.nav a:hover{border-color:var(--line);color:var(--fg)}
+.flagnote{font:500 11px var(--mono);letter-spacing:.05em;text-transform:uppercase;color:var(--review);border:1px dashed color-mix(in srgb,var(--review) 55%,transparent);padding:4px 8px;border-radius:5px}
+
+/* hero */
+.hero{border-bottom:1px solid var(--line-soft);background:
+  linear-gradient(180deg,transparent 0 calc(100% - 1px),var(--line-soft) calc(100% - 1px)),
+  repeating-linear-gradient(0deg,transparent 0 31px,color-mix(in srgb,var(--line-soft) 60%,transparent) 31px 32px)}
+.hero .wrap{display:grid;grid-template-columns:minmax(0,1.1fr) minmax(0,1fr);gap:48px;padding-block:60px 52px;align-items:center}
+.eyebrow{font:600 11.5px var(--body);letter-spacing:.1em;text-transform:uppercase;color:var(--muted);display:flex;gap:10px;align-items:center;flex-wrap:wrap}
+.eyebrow .dot{width:8px;height:8px;border-radius:50%;background:var(--accent);box-shadow:0 0 0 4px var(--accent-soft)}
+h1.big{font-family:var(--serif);font-weight:700;font-size:clamp(46px,7.4vw,96px);line-height:.98;letter-spacing:-.02em;margin:16px 0 18px}
+h1.big .amp{font-style:italic;font-weight:400;color:var(--accent)}
+h1.big{font-size:clamp(34px,4.6vw,58px);line-height:1.04}
+.lede{font-size:18.5px;color:var(--ink-2);max-width:54ch;margin:0}
+.lede b{color:var(--fg);font-weight:600}
+.hero-cta{display:flex;gap:10px;margin-top:26px;flex-wrap:wrap}
+.btn{font:600 14px var(--body);min-height:44px;padding:0 18px;border-radius:10px;border:1px solid var(--line);background:var(--white);color:var(--fg);cursor:pointer;display:inline-flex;gap:8px;align-items:center}
+.btn.primary{background:var(--solid);color:var(--solid-ink);border-color:var(--solid)}
+.btn:hover{border-color:var(--accent)}
+
+.proof{background:var(--surface);border:1px solid var(--line);border-radius:20px;padding:22px;box-shadow:0 30px 60px -38px rgba(28,34,48,.35);display:flex;flex-direction:column;gap:16px;min-width:0}
+.proof-h{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap}
+.proof-h h3{margin:0;font:600 11.5px var(--body);letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.proof-h span{font:500 12px var(--mono);color:var(--faint)}
+.funnel{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:1px;background:var(--line-soft);border:1px solid var(--line-soft);border-radius:12px;overflow:hidden}
+.funnel div{background:var(--white);padding:11px 12px;min-width:0}
+.funnel b{display:block;font:600 21px var(--mono);font-variant-numeric:tabular-nums}
+.funnel span{font-size:11.5px;color:var(--muted)}
+.funnel .bar-in{height:4px;border-radius:2px;background:var(--surface-2);margin-top:8px;overflow:hidden}
+.funnel .bar-in i{display:block;height:4px;background:var(--accent)}
+.quote{font-family:var(--serif);font-size:16.5px;line-height:1.6;color:var(--ink-2);background:var(--white);border:1px solid var(--line-soft);border-radius:12px;padding:14px 16px;margin:0}
+.quote mark{background:var(--hl);color:var(--fg);border-radius:3px;padding:1px 2px;box-decoration-break:clone;-webkit-box-decoration-break:clone}
+.quote sup{font:600 10px var(--mono);color:var(--accent);margin-left:2px}
+.answers{display:flex;flex-direction:column;gap:6px}
+.ans{display:grid;grid-template-columns:auto minmax(0,1fr) auto;gap:10px;align-items:center;font-size:13px;padding:8px 10px;border:1px solid var(--line-soft);border-radius:10px;background:var(--white)}
+.ans code{font:500 12px var(--mono);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:block}
+.ans small{display:block;color:var(--muted);font-size:12px}
+.badge{flex:none;min-width:28px;height:24px;padding:0 6px;border-radius:7px;display:inline-flex;align-items:center;justify-content:center;font:700 11px var(--mono)}
+.b-flag{background:var(--flag-bg);color:var(--flag-c)}
+.b-list{background:var(--list-bg);color:var(--list-c)}
+.b-count{background:var(--accent-soft);color:var(--accent-deep)}
+.vchip{font:600 11px var(--mono);padding:3px 8px;border-radius:999px;white-space:nowrap}
+.v-ok{background:var(--accent-soft);color:var(--accent-deep)}
+.v-un{background:var(--review-soft);color:var(--review)}
+.v-no{background:var(--bad-soft);color:var(--bad)}
+
+/* ticker */
+.ticker{border-bottom:1px solid var(--line-soft);background:var(--surface);overflow:hidden}
+.ticker .wrap{display:flex;align-items:center;gap:16px;padding-block:10px}
+.ticker label{flex:none;font:600 11px var(--mono);letter-spacing:.1em;text-transform:uppercase;color:var(--accent)}
+.track{overflow:hidden;flex:1;min-width:0;mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent);-webkit-mask-image:linear-gradient(90deg,transparent,#000 6%,#000 94%,transparent)}
+.belt{display:flex;gap:40px;width:max-content;animation:belt 80s linear infinite}
+.belt span{font:400 13px var(--mono);color:var(--muted);white-space:nowrap}
+.belt span b{color:var(--fg);font-weight:600}
+.belt span i{font-style:normal;color:var(--accent)}
+@keyframes belt{to{transform:translateX(-50%)}}
+
+/* pipeline */
+.pipe{padding-block:40px 4px}
+.pipe-row{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;counter-reset:p}
+.pipe-cell{border:1px solid var(--line);border-radius:14px;padding:14px 16px;background:var(--surface);min-width:0;position:relative;counter-increment:p}
+.pipe-cell::before{content:counter(p);position:absolute;top:12px;right:14px;font:600 12px var(--mono);color:var(--faint)}
+.pipe-cell.core{border-color:var(--accent-line);background:var(--accent-soft)}
+.pipe-cell h4{margin:0 0 4px;font:600 11px var(--body);letter-spacing:.1em;text-transform:uppercase;color:var(--muted)}
+.pipe-cell p{margin:0;font-size:14px}
+
+/* bays */
+.bay{padding-block:56px 8px;scroll-margin-top:70px}
+.bay-head{display:flex;justify-content:space-between;align-items:end;gap:20px;margin-bottom:22px;flex-wrap:wrap}
+.bay-head h2{font-family:var(--serif);font-weight:700;font-size:clamp(30px,4vw,44px);line-height:1.05;margin:8px 0 0;letter-spacing:-.015em}
+.bay-head p{margin:0;color:var(--muted);max-width:50ch}
+.bay-tag{font:600 11.5px var(--mono);letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+.tiles{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px}
+.tile{position:relative;display:flex;flex-direction:column;gap:12px;background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:18px;overflow:hidden;transition:transform .25s cubic-bezier(.2,.8,.2,1),border-color .25s,box-shadow .25s;min-width:0}
+.tile:hover{transform:translateY(-3px);border-color:var(--accent-line);box-shadow:0 22px 40px -28px rgba(15,107,92,.45)}
+.tile-top{display:flex;justify-content:space-between;align-items:flex-start;gap:10px}
+.code{font:600 30px var(--mono);letter-spacing:.02em;line-height:1}
+.phase{font:600 10.5px var(--mono);letter-spacing:.06em;text-transform:uppercase;padding:4px 7px;border-radius:5px;border:1px solid var(--line);color:var(--muted);white-space:nowrap}
+.p-live{color:var(--accent-deep);border-color:var(--accent-line);background:var(--accent-soft)}
+.p-new{color:var(--flag-c);border-color:color-mix(in srgb,var(--flag-c) 30%,transparent);background:var(--flag-bg)}
+.p-next{color:var(--review);border-color:color-mix(in srgb,var(--review) 35%,transparent);background:var(--review-soft)}
+.tile h3{margin:0;font-size:17px;font-weight:600;line-height:1.25}
+.tile p{margin:0;font-size:13.5px;color:var(--muted);line-height:1.45}
+.tile-stat{display:flex;justify-content:space-between;align-items:end;gap:10px;margin-top:auto;padding-top:12px;border-top:1px solid var(--line-soft)}
+.tile-stat b{display:block;font:600 18px var(--mono);font-variant-numeric:tabular-nums}
+.tile-stat span{font-size:11.5px;color:var(--faint)}
+.arrowbox{flex:none;width:32px;height:32px;border-radius:8px;border:1px solid var(--line);display:grid;place-items:center;font-size:14px;color:var(--muted);transition:all .2s}
+.tile:hover .arrowbox{background:var(--solid);color:var(--solid-ink);border-color:var(--solid)}
+
+/* proof bay */
+.case{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1.15fr);gap:18px;align-items:start}
+.panel{border:1px solid var(--line);border-radius:16px;background:var(--surface);overflow:hidden;min-width:0}
+.panel-h{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:14px 18px;border-bottom:1px solid var(--line-soft);flex-wrap:wrap}
+.panel-h h3{margin:0;font-size:14px;font-weight:600}
+.panel-h span{font:500 11.5px var(--mono);color:var(--faint)}
+.pbody{padding:16px 18px}
+.facts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1px;background:var(--line-soft)}
+.facts div{background:var(--surface);padding:14px 18px}
+.facts b{display:block;font-family:var(--serif);font-weight:700;font-size:30px;line-height:1.1;font-variant-numeric:tabular-nums}
+.facts span{font-size:12.5px;color:var(--muted)}
+.outcome{margin:0;padding:14px 18px;font-size:13.5px;border-top:1px solid var(--line-soft);color:var(--ink-2)}
+.scroll{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:13.5px}
+th{font:600 11px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--faint);text-align:left;padding:10px 18px;border-bottom:1px solid var(--line-soft);white-space:nowrap}
+td{padding:11px 18px;border-bottom:1px solid var(--line-soft);vertical-align:top}
+tr:last-child td{border-bottom:none}
+td:first-child{color:var(--muted);white-space:nowrap}
+.cmp td:last-child{font-weight:600}
+.cmp th:last-child{color:var(--accent)}
+.savings{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:14px}
+.save{border:1px solid var(--accent-line);background:var(--accent-soft);border-radius:14px;padding:14px 16px;display:flex;flex-direction:column;gap:4px}
+.save b{font-family:var(--serif);font-size:34px;font-weight:700;color:var(--accent-deep);line-height:1.05}
+.save span{font-size:13px;color:var(--ink-2)}
+
+/* uses, compare, market, model */
+.uses{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.use{border:1px solid var(--line);border-radius:14px;padding:16px;background:var(--surface);display:flex;flex-direction:column;gap:6px}
+.use.flag{border-color:var(--accent-line);background:var(--accent-soft)}
+.use .tag{font:600 10.5px var(--mono);letter-spacing:.06em;text-transform:uppercase;color:var(--accent)}
+.use h3{margin:0;font-size:16px}
+.use p{margin:0;font-size:13.5px;color:var(--muted)}
+.use.flag p{color:var(--ink-2)}
+a.use.flag:hover{border-color:var(--accent)}
+.market{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
+.mk{border:1px solid var(--line);border-radius:14px;padding:16px;background:var(--surface);display:flex;flex-direction:column;gap:4px}
+.mk b{font-family:var(--serif);font-size:30px;font-weight:700;line-height:1.05;font-variant-numeric:tabular-nums}
+.mk span{font-size:13px;color:var(--muted)}
+.mk.focus{border-color:var(--accent-line);background:var(--accent-soft)}
+.mk.focus b{color:var(--accent-deep)}
+.plans{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.plan{border:1px solid var(--line);border-radius:14px;padding:16px;background:var(--surface);display:flex;flex-direction:column;gap:6px}
+.plan h3{margin:0;font-size:15px}
+.price{font-family:var(--serif);font-size:28px;font-weight:700;font-variant-numeric:tabular-nums;line-height:1.1}
+.price small{font:500 12px var(--body);color:var(--muted)}
+.plan p{margin:0;font-size:13px;color:var(--muted)}
+.plan.pop{border-color:var(--accent)}
+.offers{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:12px}
+.offer{border:1px dashed var(--line);border-radius:14px;padding:14px 16px;font-size:13.5px;color:var(--ink-2)}
+.offer b{display:block;color:var(--fg);font-size:14.5px;margin-bottom:2px}
+.moat{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;margin-top:18px}
+.moat div{padding:16px;border-top:2px solid var(--accent);background:var(--surface);border-radius:0 0 14px 14px}
+.moat h3{margin:0 0 4px;font-size:15.5px}
+.moat p{margin:0;font-size:13.5px;color:var(--muted)}
+.sub-h{font:600 12px var(--body);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin:26px 0 10px}
+
+/* ask */
+.ask{display:grid;grid-template-columns:minmax(0,1.2fr) minmax(0,1fr);gap:18px;align-items:start}
+.ask-card{background:var(--solid);color:var(--solid-ink);border-radius:20px;padding:26px;display:flex;flex-direction:column;gap:14px}
+.ask-card h3{margin:0;font-family:var(--serif);font-size:30px;line-height:1.1}
+.ask-card p{margin:0;opacity:.82}
+.ph{font-family:var(--mono);font-size:.92em;background:color-mix(in srgb,currentColor 12%,transparent);padding:1px 6px;border-radius:5px;white-space:nowrap}
+.ask-list{display:flex;flex-direction:column;gap:1px;background:var(--line-soft);border:1px solid var(--line);border-radius:16px;overflow:hidden}
+.ask-list div{background:var(--surface);padding:14px 18px;display:flex;justify-content:space-between;gap:14px;flex-wrap:wrap}
+.ask-list span{color:var(--muted);font-size:13.5px}
+.ask-list b{font-weight:600;font-size:14px}
+
+/* product tour: the real screens */
+.tour-nav{position:sticky;top:calc(env(safe-area-inset-top,0px) + 57px);z-index:4;background:color-mix(in srgb,var(--bg) 92%,transparent);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border-block:1px solid var(--line-soft);margin-bottom:8px}
+.tour-nav .wrap{display:flex;gap:6px;padding-block:10px;overflow-x:auto}
+.tour-nav a{flex:none;display:inline-flex;gap:8px;align-items:center;font:500 13.5px var(--body);padding:7px 12px;border-radius:999px;border:1px solid var(--line);background:var(--surface);color:var(--ink-2)}
+.tour-nav a b{font:600 12px var(--mono);color:var(--accent)}
+.tour-nav a:hover{border-color:var(--accent)}
+.screen{padding-block:44px 8px;scroll-margin-top:120px}
+.screen-head{display:grid;grid-template-columns:auto minmax(0,1fr) minmax(0,1.1fr);gap:20px 28px;align-items:end;margin-bottom:18px}
+.screen-head .code{font-size:40px;color:var(--accent)}
+.screen-head h3{margin:4px 0 0;font-family:var(--serif);font-size:clamp(26px,3.2vw,36px);line-height:1.1}
+.screen-head p{margin:0;color:var(--ink-2)}
+.screen-head ul{margin:8px 0 0;padding-left:18px;color:var(--muted);font-size:14px;display:grid;gap:3px}
+.screen-head li::marker{color:var(--accent)}
+.window{border:1px solid var(--line);border-radius:14px;overflow:hidden;background:var(--surface);box-shadow:0 40px 80px -48px rgba(28,34,48,.45)}
+.window-bar{display:flex;align-items:center;gap:12px;padding:9px 14px;border-bottom:1px solid var(--line-soft);background:var(--surface-2)}
+.window-bar i{width:10px;height:10px;border-radius:50%;background:var(--line);flex:none}
+.window-bar span{flex:1;min-width:0;text-align:center;font:500 12px var(--mono);color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.window-bar em{font:500 11px var(--mono);font-style:normal;color:var(--faint);white-space:nowrap}
+.window button{display:block;width:100%;padding:0;border:0;background:#F1F2EF;cursor:zoom-in}
+.window img{display:block;width:100%;height:auto}
+.wide{max-width:1480px}
+.lb{position:fixed;inset:0;z-index:20;background:color-mix(in srgb,var(--bg) 96%,transparent);overflow:auto;padding:max(16px,env(safe-area-inset-top,0px)) max(16px,env(safe-area-inset-right,0px)) max(16px,env(safe-area-inset-bottom,0px)) max(16px,env(safe-area-inset-left,0px));cursor:zoom-out}
+.lb img{display:block;width:1440px;max-width:none;margin:0 auto;border:1px solid var(--line);border-radius:10px}
+.lb .btn{position:fixed;top:max(16px,env(safe-area-inset-top,0px));right:max(16px,env(safe-area-inset-right,0px))}
+.road{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px}
+.road div{border:1px solid var(--line);border-radius:14px;padding:16px;background:var(--surface);display:flex;flex-direction:column;gap:6px}
+.road h3{margin:0;font-size:16px}
+.road p{margin:0;font-size:13.5px;color:var(--muted)}
+
+.media-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-top:18px}
+.finding{margin:16px 18px;border:1px solid var(--line-soft);border-radius:10px;padding:14px 16px;display:grid;gap:8px;font-size:13.5px;background:var(--white)}
+.ftag{justify-self:start;font:600 11px var(--mono);letter-spacing:.06em;text-transform:uppercase;background:var(--bad-soft);color:var(--bad);padding:2px 8px;border-radius:4px}
+.finding blockquote{margin:0;font-family:var(--serif);font-size:15px;padding:8px 10px;background:var(--surface-2);border-radius:6px}
+.finding mark{background:var(--bad-soft);color:inherit;padding:0 2px}
+.finding dl{margin:0;display:grid;grid-template-columns:auto 1fr;gap:4px 12px}
+.finding dt{color:var(--muted);font:500 11.5px var(--mono)}
+.finding dd{margin:0}
+ul.plain{margin:0;padding:14px 18px 16px 36px;display:grid;gap:8px;font-size:14px}
+ul.plain li::marker{color:var(--accent)}
+.trust{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px 28px;list-style:none;padding:0;margin:0}
+.trust li{padding-left:22px;position:relative;font-size:14px}
+.trust li::before{content:"";position:absolute;left:0;top:6px;width:12px;height:6px;border-left:2px solid var(--accent);border-bottom:2px solid var(--accent);transform:rotate(-45deg)}
+.steps b{font-weight:600}
+a.src{color:var(--accent);text-decoration:underline;text-underline-offset:2px}
+/* section bands */
+.band{border-top:1px solid var(--line);padding-block:76px 84px;position:relative}
+.band.alt{background:var(--surface)}
+.band.tint{background:var(--surface-2)}
+.band .bay{padding-block:0}
+.band .bay#product{padding-bottom:28px!important}
+.band.tint .tour-nav{background:color-mix(in srgb,var(--surface-2) 92%,transparent)}
+.band .screen:first-of-type{padding-top:28px}
+.band .bay-head{margin-bottom:28px;padding-bottom:22px;border-bottom:1px solid var(--line-soft)}
+.bay-tag{display:flex;align-items:center;gap:10px}
+.secnum{display:inline-grid;place-items:center;min-width:34px;height:26px;padding:0 6px;border-radius:7px;background:var(--solid);color:var(--solid-ink);font:600 12px var(--mono);letter-spacing:0}
+.band.alt .panel,.band.alt .mk,.band.alt .use{background:var(--bg)}
+.band.alt .facts div{background:var(--bg)}
+.contact{display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr) minmax(0,1fr);gap:1px;background:var(--line);border:1px solid var(--line);border-radius:16px;overflow:hidden}
+.contact>div{background:var(--surface);padding:20px 22px;display:flex;flex-direction:column;gap:4px;min-width:0}
+.contact-name b{font-family:var(--serif);font-size:26px;line-height:1.15}
+.contact-name span,.contact-row span{color:var(--muted);font-size:13.5px}
+.contact-row b{font:500 16px var(--mono);user-select:all;overflow-wrap:anywhere}
+@media (max-width:760px){.contact{grid-template-columns:1fr}}
+footer{border-top:1px solid var(--line);margin-top:0}
+footer .wrap{padding-block:24px 36px;display:flex;flex-direction:column;gap:8px;color:var(--muted);font-size:12.5px}
+footer a{color:var(--accent);text-decoration:underline;text-underline-offset:2px}
+
+@media (max-width:980px){
+  .hero .wrap{grid-template-columns:1fr;gap:32px;padding-block:40px}
+  .pipe-row{grid-template-columns:1fr 1fr}
+  .case,.ask{grid-template-columns:1fr}
+  .screen-head{grid-template-columns:1fr}
+  .road{grid-template-columns:1fr 1fr}
+  .plans{grid-template-columns:1fr 1fr}
+}
+@media (max-width:680px){
+  .nav,.flagnote{display:none}
+  .uses,.market,.moat,.offers,.savings,.kpis{grid-template-columns:1fr}
+  .funnel{grid-template-columns:1fr 1fr}
+  .media-grid,.trust{grid-template-columns:1fr}
+  .road{grid-template-columns:1fr}
+  .pipe-row{grid-template-columns:1fr}
+  .facts{grid-template-columns:1fr 1fr}
+}
+@media (max-width:440px){.plans{grid-template-columns:1fr}}
+@media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
+</style>
+
+</head>
+<body>
+<header class="bar">
+  <div class="wrap">
+    <a class="mark" href="#" id="home" aria-label="Home">
+      <svg viewBox="0 0 30 30" aria-hidden="true"><rect width="30" height="30" rx="8" fill="var(--solid)"/><path d="M7 19h16" stroke="var(--solid-ink)" stroke-width="2" stroke-linecap="round"/><path d="M15 8v7" stroke="#7FD1BE" stroke-width="2" stroke-linecap="round"/><circle cx="15" cy="19" r="2.6" fill="#7FD1BE"/></svg>
+      <span data-logo>PROOVER</span> <small data-tagline>Research builder</small>
+    </a>
+    <nav class="nav" aria-label="Sections">
+      <a href="#" data-go="media">The case</a>
+      <a href="#" data-go="method">Method</a>
+      <a href="#" data-go="product">Screens</a>
+      <a href="#" data-go="model">Customers</a>
+      <a href="#" data-go="contact">Contact</a>
+    </nav>
+    <span class="flagnote">Platform Overview</span>
+  </div>
+</header>
+
+<main id="home-view">
+  <section class="hero">
+    <div class="wrap">
+      <div>
+        <div class="eyebrow"><span class="dot"></span>Research builder for media fact checking · <span data-company>Consciensus AI</span></div>
+        <h1 class="big">Research-driven AI for detecting bias and <span class="amp">enabling media accountability.</span></h1>
+        <p class="lede"><b><span data-name>Proover</span> uses advanced AI to scan media coverage for bias and breaches of editorial guidelines, grounded in rigorous academic research.</b> It delivers ongoing, data-driven reports that hold news outlets accountable for their coverage. And it goes beyond detection, with tailored engagement strategies that work directly with editors and journalists to uphold the highest standards of unbiased, ethical reporting.</p>
+        <p class="lede" style="font-size:15.5px;margin-top:12px">Built to automate the Asserson report on the BBC: a year of work by 40 people, done in a week.</p>
+        <div class="hero-cta">
+          <a class="btn primary" href="#" data-go="media">The Asserson report ↓</a>
+          <a class="btn" href="#" data-go="product">See the screens</a>
+        </div>
+      </div>
+      <div class="proof" aria-label="One run in the app, example data">
+        <div class="proof-h"><h3>One audit run</h3><span>Casualty reporting study · example</span></div>
+        <div class="funnel">
+          <div><b>4,748</b><span>Articles in</span><div class="bar-in"><i style="width:100%"></i></div></div>
+          <div><b>3,625</b><span>Pass the query</span><div class="bar-in"><i style="width:76%"></i></div></div>
+          <div><b>8</b><span>AI questions each</span><div class="bar-in"><i style="width:76%"></i></div></div>
+          <div><b>2,826</b><span>To validate</span><div class="bar-in"><i style="width:60%"></i></div></div>
+        </div>
+        <p class="quote">Five months into the offensive, <mark>health authorities said nearly 31,000 Palestinians had been killed</mark><sup>1</sup>, more than 72,500 were wounded and thousands were trapped under rubble.</p>
+        <div class="answers">
+          <div class="ans"><span class="badge b-flag">Y/N</span><div><code>pl_casualty_flag</code><small>Yes, mentions Palestinians killed</small></div><span class="vchip v-ok">✓ correct</span></div>
+          <div class="ans"><span class="badge b-list">[ ]</span><div><code>pl_casualty_count</code><small>31,000 · 3 · 23</small></div><span class="vchip v-un">? unsure</span></div>
+          <div class="ans"><span class="badge b-list">[ ]</span><div><code>pl_casualty_extract</code><small>Sentence 1, highlighted in the article</small></div><span class="vchip v-ok">✓ correct</span></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <div class="ticker" aria-label="What a run does, example data">
+    <div class="wrap">
+      <label>Test run</label>
+      <div class="track"><div class="belt" id="belt"></div></div>
+    </div>
+  </div>
+
+  <section class="pipe wrap" aria-label="How an audit runs">
+    <div class="pipe-row">
+      <div class="pipe-cell"><h4>Coverage</h4><p>Articles, broadcast transcripts, podcasts and posts from the outlet and period.</p></div>
+      <div class="pipe-cell"><h4>Filter</h4><p>Query terms and word distance rules keep only what is relevant.</p></div>
+      <div class="pipe-cell core"><h4>AI audit</h4><p>Your research questions, asked of every document, one column per answer.</p></div>
+      <div class="pipe-cell"><h4>Validate</h4><p>Experts mark each answer correct, wrong or unsure, beside the source text.</p></div>
+      <div class="pipe-cell"><h4>Report</h4><p>An Excel dataset where every number traces back to a sentence.</p></div>
+    </div>
+  </section>
+
+  <div class="band alt" aria-label="The benchmark">
+  <section class="bay wrap" id="media">
+    <div class="bay-head">
+      <div><div class="bay-tag"><span class="secnum">01</span>The benchmark</div><h2>The study that took 40 people a year</h2></div>
+      <p>Lawyer Trevor Asserson's team tested four months of BBC coverage after 7 October 2023 against the BBC's own editorial guidelines. <span data-name>Proover</span> was built to automate exactly this work.</p>
+    </div>
+    <div class="case">
+      <section class="panel">
+        <div class="panel-h"><h3>The Asserson report, by hand</h3><span>Published Sep 2024</span></div>
+        <div class="facts">
+          <div><b>9M</b><span>words of TV, radio, online, podcast and social content</span></div>
+          <div><b>~40</b><span>people: about 20 lawyers and 20 data analysts</span></div>
+          <div><b>~1 year</b><span>from start to publication</span></div>
+          <div><b>£500k</b><span>Asserson's own cost estimate, most work done pro bono</span></div>
+          <div><b>1,553</b><span>breaches of BBC editorial guidelines found</span></div>
+          <div><b>200</b><span>pages in the final report</span></div>
+        </div>
+        <p class="outcome">In November 2025 the BBC's Director General and Head of News resigned. One of the report's authors says the report paved the way.</p>
+        <p class="outcome" style="font-size:12.5px;color:var(--muted)">Sources: <a class="src" href="https://en.globes.co.il/en/article-study-calls-out-bbc-for-anti-israel-bias-1001488997" target="_blank" rel="noopener">Globes, Sep 2024</a> (team, words, cost, breaches) · <a class="src" href="https://www.jewishpress.com/news/global/uk/uk-investigation-reports-1500-incidents-of-bbc-pro-hamas-bias/2024/09/08/" target="_blank" rel="noopener">Jewish Press, Sep 2024</a> (findings, report length) · <a class="src" href="https://www.jpost.com/international/article-874738" target="_blank" rel="noopener">Jerusalem Post interview, Nov 2025</a> (timeline, resignations).</p>
+      </section>
+      <section class="panel">
+        <div class="panel-h"><h3>The same study on <span data-name>Proover</span></h3></div>
+        <div class="scroll"><table class="cmp">
+          <thead><tr><th></th><th>Asserson report</th><th data-name>Proover</th></tr></thead>
+          <tbody>
+            <tr><td>Time to write</td><td>Almost a year</td><td>1 week</td></tr>
+            <tr><td>Team</td><td>~40 lawyers and analysts</td><td>1–2 expert reviewers</td></tr>
+            <tr><td>Cost</td><td>£500k reported, £2–4M at commercial rates <span class="est">est.</span></td><td>£15–30k per study, then a few £k per report</td></tr>
+            <tr><td>Scope</td><td>One outlet, four months</td><td>Any outlet, any period, any language</td></tr>
+            <tr><td>After publication</td><td>A one-off snapshot</td><td>Re-run on new coverage</td></tr>
+            <tr><td>Challenge</td><td>BBC questioned the AI method</td><td>Published rules, repeatable runs, expert validation</td></tr>
+          </tbody>
+        </table></div>
+      </section>
+    </div>
+    <div class="savings">
+      <div class="save"><b>1 week</b><span>to write the same report, instead of almost a year</span></div>
+      <div class="save"><b>~95%</b><span>lower cost than the reported £500k</span></div>
+      <div class="save"><b>98%+</b><span>lower cost than the same work at commercial rates <span class="est">est.</span></span></div>
+    </div>
+  </section>
+
+  <div class="band " aria-label="The method">
+  </div>
+  <section class="bay wrap" id="method">
+    <div class="bay-head">
+      <div><div class="bay-tag"><span class="secnum">02</span>The method</div><h2>How a media audit is built</h2></div>
+      <p>The same steps the Asserson team did by hand, built once in <span data-name>Proover</span> and run on every article.</p>
+    </div>
+    <div class="media-grid">
+      <section class="panel">
+        <div class="panel-h"><h3>How a media audit runs</h3></div>
+        <ol class="steps">
+          <li><span><b>Ingest everything.</b> Every article, broadcast transcript, podcast and post in the window, including foreign language services.</span></li>
+          <li><span><b>Test against the outlet's own rules.</b> Editorial guidelines become published checks for accuracy, impartiality and language.</span></li>
+          <li><span><b>Measure both sides.</b> Each finding is set against how the outlet covered the other side.</span></li>
+          <li><span><b>Report with receipts.</b> Experts review the flags, and every claim links to its source.</span></li>
+        </ol>
+      </section>
+      <section class="panel">
+        <div class="panel-h"><h3>What a finding looks like</h3><span>Illustrative, not a real finding</span></div>
+        <div class="finding">
+          <span class="ftag">Possible breach</span>
+          <blockquote>"…the figure, <mark>reported without attribution</mark>, was repeated in the opening line…"</blockquote>
+          <dl>
+            <dt>Rule</dt><dd>Accuracy: sourcing of contested figures</dd>
+            <dt>Source</dt><dd>Outlet, programme, date, timestamp</dd>
+            <dt>Baseline</dt><dd>How comparable figures from the other side were sourced</dd>
+            <dt>Review</dt><dd>Confirmed by a human analyst</dd>
+          </dl>
+        </div>
+      </section>
+    </div>
+    <div class="sub-h">Why the results hold up</div>
+    <ul class="trust">
+      <li>Every answer links to the exact sentence</li>
+      <li>Repeatable runs with a full audit log</li>
+      <li>Rules published alongside results</li>
+      <li>Expert validation built into the workflow</li>
+      <li>Both sides measured the same way</li>
+      <li>Export to Excel, with validation data</li>
+    </ul>
+  </section>
+
+  <div class="band tint" aria-label="The platform">
+  </div>
+  <section class="bay wrap" id="product" style="padding-bottom:20px">
+    <div class="bay-head">
+      <div><div class="bay-tag"><span class="secnum">03</span>The platform</div><h2>Build, run and validate an audit</h2></div>
+      <p>The redesigned <span data-name>Proover</span> app, shown exactly as designed, with example data from a test audit of casualty reporting. Every function on these screens works in the current app. Click a screen to see it at full size.</p>
+    </div>
+  </section>
+  <nav class="tour-nav" aria-label="Screens"><div class="wrap wide"><a href="#" data-go="workspace"><b>WSP</b>Research workspace</a><a href="#" data-go="builder"><b>BLD</b>Audit builder</a><a href="#" data-go="validation"><b>VAL</b>Human validation</a><a href="#" data-go="export"><b>XLS</b>Excel export</a></div></nav>
+  <section class="screen wrap wide" id="workspace">
+    <div class="screen-head">
+      <span class="code">WSP</span>
+      <div><div class="bay-tag">Screen 1 of 4</div><h3>Research workspace</h3><p>One research question, its datasets, its audits and every run on one screen.</p></div>
+      <ul><li>The research question the workspace exists to answer</li><li>Datasets and audits side by side</li><li>Latest full run: records, passed query, AI audited</li><li>Every run with status, rows and duration</li></ul>
+    </div>
+    <figure class="window" style="margin:0">
+      <div class="window-bar"><i></i><i></i><i></i><span><span data-name>Proover</span> platform · Research workspace</span><em>Example data</em></div>
+      <button type="button" data-zoom="screens/main.webp" aria-label="Open Research workspace at full size"><img src="screens/main.webp" alt="Research workspace screen of the Proover app" width="1440" loading="eager"></button>
+    </figure>
+  </section>
+  <section class="screen wrap wide" id="builder">
+    <div class="screen-head">
+      <span class="code">BLD</span>
+      <div><div class="bay-tag">Screen 2 of 4</div><h3>Audit builder</h3><p>Filters keep only relevant articles, then each AI question becomes one column of answers.</p></div>
+      <ul><li>Step counts: 4,748 in, 3,625 pass the query</li><li>Query filter as a readable sentence</li><li>Proxy rules by word distance, include and exclude</li><li>Eight AI questions: yes or no, list, count</li></ul>
+    </div>
+    <figure class="window" style="margin:0">
+      <div class="window-bar"><i></i><i></i><i></i><span><span data-name>Proover</span> platform · Audit builder</span><em>Example data</em></div>
+      <button type="button" data-zoom="screens/builder.webp" aria-label="Open Audit builder at full size"><img src="screens/builder.webp" alt="Audit builder screen of the Proover app" width="1440" loading="lazy"></button>
+    </figure>
+  </section>
+  <section class="screen wrap wide" id="validation">
+    <div class="screen-head">
+      <span class="code">VAL</span>
+      <div><div class="bay-tag">Screen 3 of 4</div><h3>Human validation</h3><p>Experts check every AI answer beside the highlighted source sentence.</p></div>
+      <ul><li>Record strip with validated and pending IDs</li><li>Article text with the extracts highlighted</li><li>Correct, wrong or unsure on every value</li><li>Validate and move on with one key</li></ul>
+    </div>
+    <figure class="window" style="margin:0">
+      <div class="window-bar"><i></i><i></i><i></i><span><span data-name>Proover</span> platform · Human validation</span><em>Example data</em></div>
+      <button type="button" data-zoom="screens/validate.webp" aria-label="Open Human validation at full size"><img src="screens/validate.webp" alt="Human validation screen of the Proover app" width="1440" loading="lazy"></button>
+    </figure>
+  </section>
+  <section class="screen wrap wide" id="export">
+    <div class="screen-head">
+      <span class="code">XLS</span>
+      <div><div class="bay-tag">Screen 4 of 4</div><h3>Excel export</h3><p>Choose and order the columns, include the validation, preview the sheet, download.</p></div>
+      <ul><li>Source, audit and answer fields in three groups</li><li>Context notes and validation data on or off</li><li>Live preview of the sheet columns</li><li>Reset to the standard download</li></ul>
+    </div>
+    <figure class="window" style="margin:0">
+      <div class="window-bar"><i></i><i></i><i></i><span><span data-name>Proover</span> platform · Excel export</span><em>Example data</em></div>
+      <button type="button" data-zoom="screens/export.webp" aria-label="Open Excel export at full size"><img src="screens/export.webp" alt="Excel export screen of the Proover app" width="1440" loading="lazy"></button>
+    </figure>
+  </section>
+
+  <div class="band " aria-label="Roadmap">
+  </div>
+  <section class="bay wrap" id="roadmap">
+    <div class="bay-head">
+      <div><div class="bay-tag"><span class="secnum">04</span>Roadmap</div><h2>What comes next</h2></div>
+      <p>Packaging the builder for watchdogs, regulators and law firms who need repeat audits, finished reports and evidence that the AI agrees with people.</p>
+    </div>
+    <div class="road">
+      <div><span class="phase p-next" style="align-self:start">Roadmap</span><h3>Report writer</h3><p>A finished audit report from the validated dataset, every claim cited to its source sentence.</p></div>
+      <div><span class="phase p-next" style="align-self:start">Roadmap</span><h3>Monitoring</h3><p>The same audit re-run on an outlet's new coverage every week, with changes flagged.</p></div>
+      <div><span class="phase p-next" style="align-self:start">Roadmap</span><h3>Agreement scores</h3><p>How often the AI agrees with expert coders, published with every study.</p></div>
+      <div><span class="phase p-next" style="align-self:start">Roadmap</span><h3>News sources</h3><p>Connect news archives, broadcast transcripts and foreign language services instead of uploading files.</p></div>
+    </div>
+  </section>
+
+  <div class="band alt" aria-label="Customers and model">
+  </div>
+  <section class="bay wrap" id="model">
+    <div class="bay-head">
+      <div><div class="bay-tag"><span class="secnum">05</span>Customers and model</div><h2>Who buys a media audit</h2></div>
+      <p>Fixed-fee audits first, then reports that keep the outlet under watch.</p>
+    </div>
+    <div class="media-grid" style="margin-top:0">
+      <section class="panel">
+        <div class="panel-h"><h3>Who buys it</h3></div>
+        <ul class="plain">
+          <li>Media watchdogs and advocacy organisations</li>
+          <li>Regulators, broadcaster boards and ombudsmen</li>
+          <li>Parliamentarians and public inquiries</li>
+          <li>Law firms preparing complaints or defamation cases</li>
+          <li>Foundations and donors funding media accountability</li>
+        </ul>
+      </section>
+      <section class="panel">
+        <div class="panel-h"><h3>What they buy</h3></div>
+        <ul class="plain">
+          <li><b>Forensic audit:</b> a full study of one outlet and period, fixed fee, £15–30k</li>
+          <li><b>Monitoring:</b> ongoing tracking of an outlet or topic, a few £k per report</li>
+          <li><b>Complaint pack:</b> an evidence bundle ready for a regulator or the outlet itself, a few £k per report</li>
+        </ul>
+      </section>
+    </div>
+    <div class="market" style="margin-top:14px">
+      <div class="mk focus"><b>$5–7B</b><span>Media monitoring and analysis, where it starts <span class="est">est.</span></span></div>
+      <div class="mk"><b>$20–25B</b><span>Legal research and eDiscovery, for complaint and defamation work <span class="est">est.</span></span></div>
+      <div class="mk"><b>~$145B</b><span>Market and insights research (ESOMAR), once the builder opens to other kinds of text</span></div>
+    </div>
+  </section>
+
+  <div class="band tint" aria-label="Contact">
+  <section class="bay wrap" id="contact">
+    <div class="bay-head">
+      <div><div class="bay-tag"><span class="secnum">06</span>Contact</div><h2>Talk to the founder</h2></div>
+      <p><span data-name>Proover</span> was designed and built by its founder, who leads the research and the platform.</p>
+    </div>
+    <div class="contact">
+      <div class="contact-name"><b>Felicity Tiebel Izhari</b><span>Founder, <span data-name>Proover</span> · <span data-company>Consciensus AI</span></span></div>
+      <div class="contact-row"><span>Email</span><b class="sel">felicitytiebel@gmail.com</b></div>
+      <div class="contact-row"><span>Phone</span><b class="sel">054-442-5628</b></div>
+    </div>
+  </section>
+  </div>
+</main>
+
+<div class="lb" id="lb" hidden><button class="btn" type="button" id="lbClose">Close</button><img id="lbImg" alt=""></div>
+
+<footer><div class="wrap">
+  <span><b><span data-name>Proover</span> · <span data-company>Consciensus AI</span>.</b> Screens are the redesigned app, shown with example data from a test study.</span>
+  <span><b>Estimates.</b> "est." marks our own estimates; commercial rates assume 40 people at about a quarter of their time for ten months at London legal and analyst rates.</span>
+  <span><b>Sources.</b> Asserson report facts from <a href="https://en.globes.co.il/en/article-study-calls-out-bbc-for-anti-israel-bias-1001488997">Globes, Sep 2024</a>, <a href="https://www.jewishpress.com/news/global/uk/uk-investigation-reports-1500-incidents-of-bbc-pro-hamas-bias/2024/09/08/">Jewish Press, Sep 2024</a> and <a href="https://www.jpost.com/international/article-874738">Jerusalem Post, Nov 2025</a>. Market research size from ESOMAR; paper count from NSF.</span>
+</div></footer>
+
+<script>
+(function(){
+/* Change the name, tagline or company here; every marked element updates. */
+const BRAND="Proover", TAGLINE="Research builder", COMPANY="Consciensus AI";
+document.querySelectorAll('[data-name]').forEach(e=>e.textContent=BRAND);
+document.querySelectorAll('[data-logo]').forEach(e=>e.textContent=BRAND.toUpperCase());
+document.querySelectorAll('[data-tagline]').forEach(e=>e.textContent=TAGLINE);
+document.querySelectorAll('[data-company]').forEach(e=>e.textContent=COMPANY);
+document.querySelectorAll('img[alt]').forEach(i=>i.alt=i.alt.replace('Proover',BRAND));
+document.title=BRAND+' Platform Overview';
+
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const feed=[['QRY','Query filter kept','3,625 of 4,748'],['PRX','Word distance rule: attack within 10 words of hamas','title'],['AI','Answers per article','8 columns'],['VAL','#367 pl_casualty_count, 30,878','marked unsure'],['VAL','#367 pl_casualty_flag','✓ correct'],['XLS','Sheet built','9 columns + validation'],['RUN','Full run on E2Edataset','45h 22m'],['AI','qualifier_search found','"according to", "reported"']];
+const row=feed.map(f=>`<span><b>${f[0]}</b> ${esc(f[1])} · <i>${esc(f[2])}</i></span>`).join('');
+document.getElementById('belt').innerHTML=row+row;
+
+document.querySelectorAll('[data-go]').forEach(b=>b.addEventListener('click',e=>{e.preventDefault();const el=document.getElementById(b.dataset.go);if(el)el.scrollIntoView({behavior:'smooth',block:'start'});}));
+document.getElementById('home').addEventListener('click',e=>{e.preventDefault();window.scrollTo({top:0,behavior:'smooth'});});
+
+const lb=document.getElementById('lb'),lbImg=document.getElementById('lbImg');
+document.addEventListener('click',e=>{
+  const z=e.target.closest('[data-zoom]');
+  if(z){lbImg.src=z.dataset.zoom;lbImg.alt=z.getAttribute('aria-label');lb.hidden=false;lb.scrollTop=0;document.getElementById('lbClose').focus();return;}
+  if(!lb.hidden&&e.target.closest('#lb'))lb.hidden=true;
+});
+document.addEventListener('keydown',e=>{if(e.key==='Escape')lb.hidden=true;});
+})();
+</script>
+</body>
+</html>
